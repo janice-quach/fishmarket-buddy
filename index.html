@@ -173,6 +173,7 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .people-count { font-size: 7px; color: var(--muted); }
 
 .confetti-piece { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 200; }
+.status-msg { font-size: 8px; color: var(--green); min-height: 20px; }
 </style>
 </head>
 <body>
@@ -235,10 +236,31 @@ h2 { font-size: 11px; margin-bottom: 8px; }
   <button class="btn small" onclick="showScreen('browse')" style="margin-top:12px">back to swiping</button>
 </div>
 
+<!-- MY CARD -->
+<div id="me" class="screen scrollable">
+  <h2>your card</h2>
+  <div class="avatar-area">
+    <canvas id="me-avatar" width="128" height="128"></canvas>
+    <button class="btn small secondary" onclick="regenMyAvatar()">↻ new look</button>
+  </div>
+  <div class="input-wrap">
+    <input id="me-name" type="text" placeholder="your name" maxlength="12" autocomplete="off">
+  </div>
+  <h2>cravings</h2>
+  <div class="food-grid" id="me-food-grid"></div>
+  <h2>your vibe?</h2>
+  <div class="input-wrap">
+    <input id="me-tagline" type="text" placeholder="e.g. here for the oysters" maxlength="40" autocomplete="off">
+  </div>
+  <div class="status-msg" id="me-status"></div>
+  <button class="btn" onclick="updateProfile()" style="margin-top:8px">save changes</button>
+</div>
+
 <!-- NAV -->
 <div class="nav-bar" id="nav-bar">
   <button class="nav-btn" onclick="showScreen('browse')">🐟 swipe</button>
   <button class="nav-btn" onclick="showScreen('matches')">💕 buddies</button>
+  <button class="nav-btn" onclick="showScreen('me')">🪞 me</button>
 </div>
 
 <script>
@@ -351,11 +373,12 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const nav = document.getElementById('nav-bar');
-  const showNav = ['browse', 'matches'].includes(id);
+  const showNav = ['browse', 'matches', 'me'].includes(id);
   nav.classList.toggle('visible', showNav);
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (id === 'browse') { nav.children[0].classList.add('active'); loadBrowse(); }
   if (id === 'matches') { nav.children[1].classList.add('active'); loadMatches(); }
+  if (id === 'me') { nav.children[2].classList.add('active'); loadMe(); }
 }
 
 function startApp() {
@@ -588,6 +611,92 @@ async function loadMatches() {
     row.append(canvas, info);
     list.appendChild(row);
   });
+}
+
+// ── ME SCREEN ──
+let meAvatarData = null;
+const meSelectedFoods = new Set();
+let meGridBuilt = false;
+
+function buildMeFoodGrid() {
+  if (meGridBuilt) return;
+  const grid = document.getElementById('me-food-grid');
+  FOODS.forEach(f => {
+    const chip = document.createElement('div');
+    chip.className = 'food-chip';
+    chip.dataset.id = f.id;
+    chip.innerHTML = `<span class="emoji">${f.emoji}</span>${f.label}`;
+    chip.onclick = () => {
+      if (meSelectedFoods.has(f.id)) { meSelectedFoods.delete(f.id); chip.classList.remove('selected'); }
+      else { meSelectedFoods.add(f.id); chip.classList.add('selected'); }
+    };
+    grid.appendChild(chip);
+  });
+  meGridBuilt = true;
+}
+
+function loadMe() {
+  buildMeFoodGrid();
+  const myProfile = allProfiles.find(p => p.id === myProfileId);
+  if (!myProfile) return;
+
+  document.getElementById('me-name').value = myProfile.name;
+  document.getElementById('me-tagline').value = myProfile.tagline || '';
+  meAvatarData = { animalIdx: myProfile.animal_idx, paletteIdx: myProfile.palette_idx };
+  drawAvatar(document.getElementById('me-avatar'), meAvatarData.animalIdx, meAvatarData.paletteIdx, 128);
+
+  // Sync food selections
+  meSelectedFoods.clear();
+  document.querySelectorAll('#me-food-grid .food-chip').forEach(chip => {
+    const id = chip.dataset.id;
+    if (myProfile.foods.includes(id)) { meSelectedFoods.add(id); chip.classList.add('selected'); }
+    else { chip.classList.remove('selected'); }
+  });
+
+  document.getElementById('me-status').textContent = '';
+}
+
+function regenMyAvatar() {
+  meAvatarData = {
+    animalIdx: Math.floor(Math.random() * ANIMALS.length),
+    paletteIdx: Math.floor(Math.random() * PALETTES.length),
+  };
+  drawAvatar(document.getElementById('me-avatar'), meAvatarData.animalIdx, meAvatarData.paletteIdx, 128);
+}
+
+async function updateProfile() {
+  const name = document.getElementById('me-name').value.trim();
+  if (!name) return;
+  if (meSelectedFoods.size === 0) return;
+
+  const tagline = document.getElementById('me-tagline').value.trim() || null;
+  const status = document.getElementById('me-status');
+
+  try {
+    const updated = await api('/profiles/' + myProfileId, {
+      method: 'PUT',
+      body: JSON.stringify({
+        name,
+        foods: [...meSelectedFoods],
+        animal_idx: meAvatarData.animalIdx,
+        palette_idx: meAvatarData.paletteIdx,
+        tagline,
+      }),
+    });
+
+    // Update local cache
+    const idx = allProfiles.findIndex(p => p.id === myProfileId);
+    if (idx >= 0) {
+      allProfiles[idx] = { ...allProfiles[idx], ...updated, foods: [...meSelectedFoods] };
+    }
+
+    status.textContent = 'saved ✓';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+  } catch (e) {
+    console.error('update failed', e);
+    status.textContent = 'failed to save';
+    status.style.color = 'var(--pink)';
+  }
 }
 
 // ── CONFETTI ──

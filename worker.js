@@ -3,7 +3,7 @@ export default {
     const url = new URL(request.url);
     const cors = {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
 
@@ -33,6 +33,20 @@ export default {
           'INSERT INTO profiles (id, name, foods, animal_idx, palette_idx, tagline) VALUES (?, ?, ?, ?, ?, ?)'
         ).bind(id, name, JSON.stringify(foods), animal_idx, palette_idx, tagline || null).run();
         return json({ id, name, foods, animal_idx, palette_idx, tagline });
+      }
+
+      // PUT /profiles/:id
+      if (url.pathname.startsWith('/profiles/') && request.method === 'PUT') {
+        const profileId = url.pathname.split('/')[2];
+        const body = await request.json();
+        const { name, foods, animal_idx, palette_idx, tagline } = body;
+        if (!name || !foods || animal_idx == null || palette_idx == null) {
+          return json({ error: 'missing fields' }, 400);
+        }
+        await env.DB.prepare(
+          'UPDATE profiles SET name = ?, foods = ?, animal_idx = ?, palette_idx = ?, tagline = ? WHERE id = ?'
+        ).bind(name, JSON.stringify(foods), animal_idx, palette_idx, tagline || null, profileId).run();
+        return json({ id: profileId, name, foods, animal_idx, palette_idx, tagline });
       }
 
       // POST /likes
