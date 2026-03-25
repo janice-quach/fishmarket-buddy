@@ -50,7 +50,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .fish-icon { font-size: 48px; animation: bob 2s ease-in-out infinite; }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-/* BUTTONS */
 .btn {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
@@ -69,7 +68,7 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .btn.small { font-size: 8px; padding: 10px 16px; }
 
 .input-wrap { width: 100%; max-width: 320px; }
-.input-wrap input, .input-wrap textarea {
+.input-wrap input {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
   width: 100%;
@@ -78,7 +77,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
   background: var(--card);
   color: var(--navy);
   outline: none;
-  resize: none;
 }
 
 .avatar-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -105,7 +103,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .food-chip.selected { background: var(--blue); box-shadow: inset 0 0 0 2px var(--navy); }
 .food-chip .emoji { font-size: 18px; display: block; margin-bottom: 4px; font-family: system-ui; }
 
-/* CARD STACK */
 .card-stack { position: relative; width: 280px; height: 360px; }
 .buddy-card {
   position: absolute; width: 100%; height: 100%;
@@ -142,7 +139,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .swipe-hint.left { left: -60px; color: var(--pink); }
 .swipe-hint.right { right: -60px; color: var(--green); }
 
-/* MATCH CELEBRATION */
 #match-screen { background: var(--navy); color: var(--card); }
 #match-screen h2 { font-size: 14px; color: var(--pink); animation: pulse 0.6s ease-in-out infinite alternate; }
 @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
@@ -151,7 +147,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .match-heart { font-size: 32px; font-family: system-ui; animation: bob 1s ease-in-out infinite; }
 .match-foods { font-size: 8px; color: var(--blue); line-height: 1.8; }
 
-/* MATCHES LIST */
 .matches-list { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
 .match-row { display: flex; align-items: center; gap: 12px; padding: 12px; border: var(--border); background: var(--card); }
 .match-row canvas { image-rendering: pixelated; }
@@ -160,7 +155,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 .match-row .info .foods { font-size: 14px; font-family: system-ui; margin-top: 4px; }
 .no-matches { font-size: 8px; color: var(--muted); line-height: 1.8; }
 
-/* NAV */
 .nav-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: none; justify-content: center; gap: 20px;
@@ -173,21 +167,12 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 }
 .nav-btn.active { color: var(--pink); }
 
-/* SETUP SCREEN */
-#setup .step { font-size: 7px; color: var(--muted); line-height: 1.8; max-width: 300px; text-align: left; }
-#setup .step b { color: var(--navy); }
-.status-msg { font-size: 8px; color: var(--green); min-height: 20px; }
-.error-msg { font-size: 8px; color: var(--pink); min-height: 20px; }
-
-/* LOADING */
 .loading { font-size: 8px; color: var(--muted); animation: blink 1s infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-/* CONFETTI */
-.confetti-piece { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 200; }
-
-/* PEOPLE COUNT */
 .people-count { font-size: 7px; color: var(--muted); }
+
+.confetti-piece { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 200; }
 </style>
 </head>
 <body>
@@ -198,55 +183,6 @@ h2 { font-size: 11px; margin-bottom: 8px; }
   <h1>find your<br>fish market<br>buddy</h1>
   <p style="font-size:8px;color:var(--muted);line-height:1.6">make a profile.<br>swipe for your crew.</p>
   <button class="btn" onclick="startApp()">let's go</button>
-</div>
-
-<!-- SETUP (only shown to whoever sets up Supabase) -->
-<div id="setup" class="screen scrollable">
-  <h2>quick setup</h2>
-  <p style="font-size:7px;color:var(--muted);line-height:1.8;max-width:300px">
-    one-time setup so your team's profiles are saved. takes 2 min.
-  </p>
-  <div class="step">
-    <b>1.</b> go to supabase.com → sign up free<br>
-    <b>2.</b> create a new project (any name/password)<br>
-    <b>3.</b> wait for it to spin up (~30s)<br>
-    <b>4.</b> go to SQL Editor → paste this and hit Run:
-  </div>
-  <div class="input-wrap">
-    <textarea id="sql-snippet" rows="6" readonly style="font-size:7px;line-height:1.4;font-family:monospace;cursor:pointer" onclick="this.select();document.execCommand('copy')">create table profiles (
-  id uuid default gen_random_uuid() primary key,
-  name text not null,
-  foods text[] not null,
-  animal_idx int not null,
-  palette_idx int not null,
-  tagline text,
-  created_at timestamptz default now()
-);
-create table likes (
-  id uuid default gen_random_uuid() primary key,
-  from_id uuid references profiles(id),
-  to_id uuid references profiles(id),
-  created_at timestamptz default now(),
-  unique(from_id, to_id)
-);
-alter table profiles enable row level security;
-alter table likes enable row level security;
-create policy "anyone can read profiles" on profiles for select using (true);
-create policy "anyone can insert profiles" on profiles for insert with check (true);
-create policy "anyone can read likes" on likes for select using (true);
-create policy "anyone can insert likes" on likes for insert with check (true);</textarea>
-  </div>
-  <div class="step">
-    <b>5.</b> go to Settings → API → copy your <b>Project URL</b> and <b>anon public</b> key below:
-  </div>
-  <div class="input-wrap">
-    <input id="setup-url" type="text" placeholder="project url" autocomplete="off">
-  </div>
-  <div class="input-wrap">
-    <input id="setup-key" type="text" placeholder="anon public key" autocomplete="off">
-  </div>
-  <div class="status-msg" id="setup-status"></div>
-  <button class="btn" onclick="saveConfig()">connect</button>
 </div>
 
 <!-- PROFILE -->
@@ -306,70 +242,25 @@ create policy "anyone can insert likes" on likes for insert with check (true);</
 </div>
 
 <script>
-// ── CONFIG ──
-let SUPABASE_URL = '';
-let SUPABASE_KEY = '';
-let myProfileId = null;
+const API = 'https://fishmarket-buddy-api.janicequach.workers.dev';
+
+let myProfileId = localStorage.getItem('fm_profile_id');
 let allProfiles = [];
 let browsableProfiles = [];
 let currentBrowseIdx = 0;
-let myLikes = new Set();
-let likesToMe = new Set();
+let myLikedIds = new Set();
 let matchedProfiles = [];
 
-// Check URL hash for config (shared link)
-function loadConfigFromHash() {
-  try {
-    const hash = location.hash.slice(1);
-    if (!hash) return false;
-    const decoded = JSON.parse(atob(hash));
-    if (decoded.u && decoded.k) {
-      SUPABASE_URL = decoded.u;
-      SUPABASE_KEY = decoded.k;
-      localStorage.setItem('fm_sb_url', SUPABASE_URL);
-      localStorage.setItem('fm_sb_key', SUPABASE_KEY);
-      return true;
-    }
-  } catch {}
-  return false;
-}
-
-function loadConfigFromStorage() {
-  SUPABASE_URL = localStorage.getItem('fm_sb_url') || '';
-  SUPABASE_KEY = localStorage.getItem('fm_sb_key') || '';
-  return !!(SUPABASE_URL && SUPABASE_KEY);
-}
-
-function hasConfig() {
-  return loadConfigFromHash() || loadConfigFromStorage();
-}
-
-// ── SUPABASE REST HELPERS ──
-function sbFetch(path, options = {}) {
-  const url = `${SUPABASE_URL}/rest/v1/${path}`;
-  const headers = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json',
-    'Prefer': options.prefer || 'return=representation',
-    ...options.headers,
-  };
-  return fetch(url, { ...options, headers });
-}
-
-async function sbSelect(table, query = '') {
-  const res = await sbFetch(`${table}?${query}`);
-  if (!res.ok) throw new Error(`select failed: ${res.status}`);
+// ── API HELPERS ──
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
   return res.json();
 }
 
-async function sbInsert(table, data) {
-  const res = await sbFetch(table, { method: 'POST', body: JSON.stringify(data) });
-  if (!res.ok) throw new Error(`insert failed: ${res.status}`);
-  return res.json();
-}
-
-// ── FOOD OPTIONS ──
+// ── FOODS ──
 const FOODS = [
   { id: 'sashimi', emoji: '🍣', label: 'sashimi' },
   { id: 'oysters', emoji: '🦪', label: 'oysters' },
@@ -381,49 +272,18 @@ const FOODS = [
   { id: 'poke', emoji: '🥣', label: 'poke bowl' },
   { id: 'tacos', emoji: '🌮', label: 'fish tacos' },
 ];
+function foodEmoji(id) { const f = FOODS.find(x => x.id === id); return f ? f.emoji : ''; }
 
-// ── PIXEL AVATAR SYSTEM ──
+// ── PIXEL AVATARS ──
 const ANIMALS = [
-  { name: 'cat', pixels: [
-    '....1111....','...111111...','..11....11..','.11.1..1.11.',
-    '.11......11.','..11....11..','...111111...','....1111....',
-    '...111111...','..11111111..','..11111111..','...111111...',
-  ]},
-  { name: 'fish', pixels: [
-    '............','....1111....','...111111...','..1111.1111.',
-    '.11111111111','.11111111111','..1111.1111.','...111111...',
-    '....1111....','............','............','............',
-  ]},
-  { name: 'octopus', pixels: [
-    '....1111....','...111111...','..11.11.11..','..11111111..',
-    '..11111111..','...111111...','..11.11.11..','.11..11..11.',
-    '.1...11...1.','1....11....1','............','............',
-  ]},
-  { name: 'crab', pixels: [
-    '1..........1','.1........1.','.1..1111..1.','..1.1..1.1..',
-    '..11111111..','..11.11.11..','..11111111..','...111111...',
-    '..1..11..1..','.1...11...1.','............','............',
-  ]},
-  { name: 'penguin', pixels: [
-    '....1111....','...111111...','..11.11.11..','..11111111..',
-    '.1.222222.1.','.1.222222.1.','...222222...','...111111...',
-    '...111111...','..33....33..','..333..333..','............',
-  ]},
-  { name: 'seal', pixels: [
-    '............','...111111...','..11111111..','.11.1..1.11.',
-    '.1111..1111.','.111.11.111.','..11111111..','...111111...',
-    '....111111..','.....11111..','......1111..','............',
-  ]},
-  { name: 'shrimp', pixels: [
-    '.....111....','....11.11...','...11...1...','...1....1...',
-    '..11...1....','..1...1.....','..1..1......','..1.1.......',
-    '...1........','..1.........','............','............',
-  ]},
-  { name: 'puffer', pixels: [
-    '....1111....','..11111111..','.1111111111.','.11.1111.11.',
-    '111111111111','111111111111','.1111111111.','.1111111111.',
-    '..11111111..','....1111....','............','............',
-  ]},
+  { name: 'cat', pixels: ['....1111....','...111111...','..11....11..','.11.1..1.11.','.11......11.','..11....11..','...111111...','....1111....','...111111...','..11111111..','..11111111..','...111111...'] },
+  { name: 'fish', pixels: ['............','....1111....','...111111...','..1111.1111.','.11111111111','.11111111111','..1111.1111.','...111111...','....1111....','............','............','............'] },
+  { name: 'octopus', pixels: ['....1111....','...111111...','..11.11.11..','..11111111..','..11111111..','...111111...','..11.11.11..','.11..11..11.','.1...11...1.','1....11....1','............','............'] },
+  { name: 'crab', pixels: ['1..........1','.1........1.','.1..1111..1.','..1.1..1.1..','..11111111..','..11.11.11..','..11111111..','...111111...','..1..11..1..','.1...11...1.','............','............'] },
+  { name: 'penguin', pixels: ['....1111....','...111111...','..11.11.11..','..11111111..','.1.222222.1.','.1.222222.1.','...222222...','...111111...','...111111...','..33....33..','..333..333..','............'] },
+  { name: 'seal', pixels: ['............','...111111...','..11111111..','.11.1..1.11.','.1111..1111.','.111.11.111.','..11111111..','...111111...','....111111..','.....11111..','......1111..','............'] },
+  { name: 'shrimp', pixels: ['.....111....','....11.11...','...11...1...','...1....1...','..11...1....','..1...1.....','..1..1......','..1.1.......','...1........','..1.........','............','............'] },
+  { name: 'puffer', pixels: ['....1111....','..11111111..','.1111111111.','.11.1111.11.','111111111111','111111111111','.1111111111.','.1111111111.','..11111111..','....1111....','............','............'] },
 ];
 
 const PALETTES = [
@@ -441,21 +301,6 @@ const PALETTES = [
 
 let myAvatarData = null;
 
-// ── INIT FOOD GRID ──
-const foodGrid = document.getElementById('food-grid');
-const selectedFoods = new Set();
-FOODS.forEach(f => {
-  const chip = document.createElement('div');
-  chip.className = 'food-chip';
-  chip.innerHTML = `<span class="emoji">${f.emoji}</span>${f.label}`;
-  chip.onclick = () => {
-    if (selectedFoods.has(f.id)) { selectedFoods.delete(f.id); chip.classList.remove('selected'); }
-    else { selectedFoods.add(f.id); chip.classList.add('selected'); }
-  };
-  foodGrid.appendChild(chip);
-});
-
-// ── AVATAR ──
 function drawAvatar(canvas, animalIdx, paletteIdx, size) {
   const ctx = canvas.getContext('2d');
   const animal = ANIMALS[animalIdx];
@@ -471,10 +316,10 @@ function drawAvatar(canvas, animalIdx, paletteIdx, size) {
       if (color) { ctx.fillStyle = color; ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize); }
     }
   }
-  const eyePositions = { cat: [[3,3],[8,3]], fish: [[4,3]], seal: [[3,3],[8,3]], puffer: [[3,3],[8,3]] };
-  if (eyePositions[animal.name]) {
+  const eyes = { cat: [[3,3],[8,3]], fish: [[4,3]], seal: [[3,3],[8,3]], puffer: [[3,3],[8,3]] };
+  if (eyes[animal.name]) {
     ctx.fillStyle = palette.eye;
-    eyePositions[animal.name].forEach(([ex, ey]) => ctx.fillRect(ex * cellSize, ey * cellSize, cellSize, cellSize));
+    eyes[animal.name].forEach(([ex, ey]) => ctx.fillRect(ex * cellSize, ey * cellSize, cellSize, cellSize));
   }
 }
 
@@ -487,7 +332,21 @@ function regenAvatar() {
 }
 regenAvatar();
 
-// ── SCREEN MANAGEMENT ──
+// ── FOOD GRID ──
+const foodGrid = document.getElementById('food-grid');
+const selectedFoods = new Set();
+FOODS.forEach(f => {
+  const chip = document.createElement('div');
+  chip.className = 'food-chip';
+  chip.innerHTML = `<span class="emoji">${f.emoji}</span>${f.label}`;
+  chip.onclick = () => {
+    if (selectedFoods.has(f.id)) { selectedFoods.delete(f.id); chip.classList.remove('selected'); }
+    else { selectedFoods.add(f.id); chip.classList.add('selected'); }
+  };
+  foodGrid.appendChild(chip);
+});
+
+// ── SCREENS ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -499,52 +358,9 @@ function showScreen(id) {
   if (id === 'matches') { nav.children[1].classList.add('active'); loadMatches(); }
 }
 
-// ── APP START ──
 function startApp() {
-  // Check for existing profile in localStorage
-  myProfileId = localStorage.getItem('fm_profile_id');
-
-  if (hasConfig()) {
-    if (myProfileId) {
-      // Already set up + has profile → go straight to browse
-      showScreen('browse');
-    } else {
-      showScreen('profile');
-    }
-  } else {
-    showScreen('setup');
-  }
-}
-
-// ── SETUP ──
-async function saveConfig() {
-  const url = document.getElementById('setup-url').value.trim().replace(/\/$/, '');
-  const key = document.getElementById('setup-key').value.trim();
-  const status = document.getElementById('setup-status');
-
-  if (!url || !key) { status.textContent = 'need both url and key'; status.className = 'error-msg'; return; }
-
-  SUPABASE_URL = url;
-  SUPABASE_KEY = key;
-
-  status.textContent = 'testing connection...';
-  status.className = 'status-msg';
-
-  try {
-    await sbSelect('profiles', 'limit=1');
-    localStorage.setItem('fm_sb_url', url);
-    localStorage.setItem('fm_sb_key', key);
-
-    // Set the hash so the share link works
-    const config = btoa(JSON.stringify({ u: url, k: key }));
-    history.replaceState(null, '', '#' + config);
-
-    status.textContent = 'connected! share this url with your team ✓';
-    setTimeout(() => showScreen('profile'), 1000);
-  } catch (e) {
-    status.textContent = 'connection failed — check url and key';
-    status.className = 'error-msg';
-  }
+  if (myProfileId) { showScreen('browse'); }
+  else { showScreen('profile'); }
 }
 
 // ── PROFILE ──
@@ -556,14 +372,16 @@ async function saveProfile() {
   const tagline = document.getElementById('tagline-input').value.trim() || null;
 
   try {
-    const [profile] = await sbInsert('profiles', {
-      name,
-      foods: [...selectedFoods],
-      animal_idx: myAvatarData.animalIdx,
-      palette_idx: myAvatarData.paletteIdx,
-      tagline,
+    const profile = await api('/profiles', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        foods: [...selectedFoods],
+        animal_idx: myAvatarData.animalIdx,
+        palette_idx: myAvatarData.paletteIdx,
+        tagline,
+      }),
     });
-
     myProfileId = profile.id;
     localStorage.setItem('fm_profile_id', profile.id);
     showScreen('browse');
@@ -577,34 +395,30 @@ async function loadBrowse() {
   const stack = document.getElementById('card-stack');
   stack.querySelectorAll('.buddy-card').forEach(c => c.remove());
 
-  // Show loading
   const loadingCard = document.createElement('div');
   loadingCard.className = 'buddy-card';
   loadingCard.innerHTML = '<div class="loading">loading crew...</div>';
   stack.appendChild(loadingCard);
 
   try {
-    // Fetch all profiles, my likes, and likes to me
-    const [profiles, myLikesData, likesToMeData] = await Promise.all([
-      sbSelect('profiles', 'order=created_at.asc'),
-      sbSelect('likes', `from_id=eq.${myProfileId}&select=to_id`),
-      sbSelect('likes', `to_id=eq.${myProfileId}&select=from_id`),
+    const [profiles, likedIds] = await Promise.all([
+      api('/profiles'),
+      api('/likes/' + myProfileId),
     ]);
 
     allProfiles = profiles;
-    myLikes = new Set(myLikesData.map(l => l.to_id));
-    likesToMe = new Set(likesToMeData.map(l => l.from_id));
+    myLikedIds = new Set(likedIds);
 
-    // Browsable = not me, not already liked
-    browsableProfiles = allProfiles.filter(p => p.id !== myProfileId && !myLikes.has(p.id));
+    // Parse foods from JSON string if needed
+    allProfiles.forEach(p => {
+      if (typeof p.foods === 'string') p.foods = JSON.parse(p.foods);
+    });
+
+    browsableProfiles = allProfiles.filter(p => p.id !== myProfileId && !myLikedIds.has(p.id));
     currentBrowseIdx = 0;
 
-    // Update people count
     const count = allProfiles.length;
     document.getElementById('people-count').textContent = `${count} ${count === 1 ? 'person' : 'people'} joined`;
-
-    // Find matches (mutual likes)
-    matchedProfiles = allProfiles.filter(p => myLikes.has(p.id) && likesToMe.has(p.id));
 
     renderCurrentCard();
   } catch (e) {
@@ -620,7 +434,7 @@ function renderCurrentCard() {
   if (currentBrowseIdx >= browsableProfiles.length) {
     const empty = document.createElement('div');
     empty.className = 'buddy-card';
-    empty.innerHTML = '<div style="font-size:32px;font-family:system-ui">🐡</div><div style="font-size:8px;line-height:1.8">no more people!<br>waiting for more to join...<br><br>check your matches</div>';
+    empty.innerHTML = '<div style="font-size:32px;font-family:system-ui">🐡</div><div style="font-size:8px;line-height:1.8">no more people!<br>waiting for more<br>to join...</div>';
     stack.appendChild(empty);
     return;
   }
@@ -640,8 +454,7 @@ function renderCurrentCard() {
 
   const foodsEl = document.createElement('div');
   foodsEl.className = 'foods';
-  const buddyFoodEmojis = buddy.foods.map(fid => { const f = FOODS.find(x => x.id === fid); return f ? f.emoji : ''; }).join(' ');
-  foodsEl.textContent = buddyFoodEmojis;
+  foodsEl.textContent = buddy.foods.map(foodEmoji).join(' ');
 
   const tagEl = document.createElement('div');
   tagEl.className = 'tagline';
@@ -650,7 +463,6 @@ function renderCurrentCard() {
   card.append(canvas, nameEl, foodsEl, tagEl);
   stack.appendChild(card);
 
-  // Touch swiping
   let startX = 0, currentX = 0, dragging = false;
   card.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; });
   card.addEventListener('touchmove', e => {
@@ -691,12 +503,13 @@ async function swipeYes() {
 
   animateSwipe('right', async () => {
     try {
-      await sbInsert('likes', { from_id: myProfileId, to_id: buddy.id });
-      myLikes.add(buddy.id);
+      const result = await api('/likes', {
+        method: 'POST',
+        body: JSON.stringify({ from_id: myProfileId, to_id: buddy.id }),
+      });
+      myLikedIds.add(buddy.id);
 
-      if (likesToMe.has(buddy.id)) {
-        // Mutual match!
-        matchedProfiles.push(buddy);
+      if (result.matched) {
         const myProfile = allProfiles.find(p => p.id === myProfileId);
         const sharedFoods = buddy.foods.filter(fid => myProfile && myProfile.foods.includes(fid));
         showMatchScreen(buddy, myProfile, sharedFoods);
@@ -734,8 +547,7 @@ function showMatchScreen(buddy, myProfile, sharedFoodIds) {
 
   const foodsEl = document.getElementById('match-foods');
   if (sharedFoodIds.length > 0) {
-    const emojis = sharedFoodIds.map(fid => { const f = FOODS.find(x => x.id === fid); return f ? f.emoji : ''; }).join(' ');
-    foodsEl.textContent = `you both love ${emojis}`;
+    foodsEl.textContent = `you both love ${sharedFoodIds.map(foodEmoji).join(' ')}`;
   } else {
     foodsEl.textContent = "different tastes, same vibes";
   }
@@ -749,18 +561,14 @@ function continueAfterMatch() {
 // ── MATCHES LIST ──
 async function loadMatches() {
   const list = document.getElementById('matches-list');
-  list.innerHTML = '';
+  list.innerHTML = '<div class="loading">loading...</div>';
 
   try {
-    // Refresh likes data
-    const [myLikesData, likesToMeData] = await Promise.all([
-      sbSelect('likes', `from_id=eq.${myProfileId}&select=to_id`),
-      sbSelect('likes', `to_id=eq.${myProfileId}&select=from_id`),
-    ]);
-    myLikes = new Set(myLikesData.map(l => l.to_id));
-    likesToMe = new Set(likesToMeData.map(l => l.from_id));
-    matchedProfiles = allProfiles.filter(p => myLikes.has(p.id) && likesToMe.has(p.id));
-  } catch {}
+    matchedProfiles = await api('/matches/' + myProfileId);
+    matchedProfiles.forEach(p => { if (typeof p.foods === 'string') p.foods = JSON.parse(p.foods); });
+  } catch { matchedProfiles = []; }
+
+  list.innerHTML = '';
 
   if (matchedProfiles.length === 0) {
     list.innerHTML = '<div class="no-matches">no matches yet!<br>keep swiping 🐟</div>';
@@ -776,8 +584,7 @@ async function loadMatches() {
     drawAvatar(canvas, m.animal_idx, m.palette_idx, 48);
     const info = document.createElement('div');
     info.className = 'info';
-    const emojis = m.foods.map(fid => { const f = FOODS.find(x => x.id === fid); return f ? f.emoji : ''; }).join(' ');
-    info.innerHTML = `<div class="name">${m.name}</div><div class="foods">${emojis}</div>`;
+    info.innerHTML = `<div class="name">${m.name}</div><div class="foods">${m.foods.map(foodEmoji).join(' ')}</div>`;
     row.append(canvas, info);
     list.appendChild(row);
   });

@@ -1,0 +1,8 @@
+name = "fishmarket-buddy-api"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fishmarket-buddy"
+database_id = "0cd7f2c7-c77c-4302-b9ae-9845c953fc06"
