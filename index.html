@@ -311,7 +311,9 @@ async function api(path, opts = {}) {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
 }
 
 // ── FOODS ──
@@ -423,7 +425,11 @@ function startApp() {
 async function saveProfile() {
   const name = document.getElementById('name-input').value.trim();
   if (!name) { document.getElementById('name-input').style.borderColor = '#f582ae'; return; }
-  if (selectedFoods.size === 0) return;
+  if (selectedFoods.size === 0) {
+    document.querySelector('.food-grid').style.outline = '2px solid #f582ae';
+    setTimeout(() => { document.querySelector('.food-grid').style.outline = ''; }, 1500);
+    return;
+  }
 
   const tagline = document.getElementById('tagline-input').value.trim() || null;
 
@@ -771,7 +777,11 @@ function regenMyAvatar() {
 async function updateProfile() {
   const name = document.getElementById('me-name').value.trim();
   if (!name) return;
-  if (meSelectedFoods.size === 0) return;
+  if (meSelectedFoods.size === 0) {
+    document.getElementById('me-status').textContent = 'pick at least one food!';
+    document.getElementById('me-status').style.color = 'var(--pink)';
+    return;
+  }
 
   const tagline = document.getElementById('me-tagline').value.trim() || null;
   const status = document.getElementById('me-status');
