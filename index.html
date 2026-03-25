@@ -174,6 +174,30 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 
 .confetti-piece { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 200; }
 .status-msg { font-size: 8px; color: var(--green); min-height: 20px; }
+
+.crew-section { width: 100%; max-width: 320px; margin-bottom: 12px; }
+.crew-header {
+  font-size: 9px; padding: 10px 12px;
+  background: var(--card); border: var(--border);
+  box-shadow: 4px 4px 0 var(--navy);
+  display: flex; align-items: center; gap: 8px;
+}
+.crew-header .crew-emoji { font-size: 18px; font-family: system-ui; }
+.crew-header .crew-label { flex: 1; }
+.crew-header .crew-count { font-size: 7px; color: var(--muted); }
+.crew-members {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 10px; margin-top: -3px;
+  background: var(--card); border: var(--border); border-top: none;
+}
+.crew-member {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 64px;
+}
+.crew-member canvas { image-rendering: pixelated; border: 2px solid var(--navy); }
+.crew-member .name { font-size: 6px; color: var(--navy); text-align: center; word-break: break-all; }
+.crew-member.is-me .name { color: var(--pink); }
+.crew-empty { font-size: 7px; color: var(--muted); line-height: 1.8; }
 </style>
 </head>
 <body>
@@ -236,6 +260,13 @@ h2 { font-size: 11px; margin-bottom: 8px; }
   <button class="btn small" onclick="showScreen('browse')" style="margin-top:12px">back to swiping</button>
 </div>
 
+<!-- CREWS -->
+<div id="crews" class="screen scrollable">
+  <h2>the crews</h2>
+  <p style="font-size:7px;color:var(--muted);line-height:1.6;margin-bottom:4px">find your people by food</p>
+  <div id="crews-list"></div>
+</div>
+
 <!-- MY CARD -->
 <div id="me" class="screen scrollable">
   <h2>your card</h2>
@@ -259,6 +290,7 @@ h2 { font-size: 11px; margin-bottom: 8px; }
 <!-- NAV -->
 <div class="nav-bar" id="nav-bar">
   <button class="nav-btn" onclick="showScreen('browse')">🐟 swipe</button>
+  <button class="nav-btn" onclick="showScreen('crews')">⚓ crews</button>
   <button class="nav-btn" onclick="showScreen('matches')">💕 buddies</button>
   <button class="nav-btn" onclick="showScreen('me')">🪞 me</button>
 </div>
@@ -373,12 +405,13 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const nav = document.getElementById('nav-bar');
-  const showNav = ['browse', 'matches', 'me'].includes(id);
+  const showNav = ['browse', 'crews', 'matches', 'me'].includes(id);
   nav.classList.toggle('visible', showNav);
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (id === 'browse') { nav.children[0].classList.add('active'); loadBrowse(); }
-  if (id === 'matches') { nav.children[1].classList.add('active'); loadMatches(); }
-  if (id === 'me') { nav.children[2].classList.add('active'); loadMe(); }
+  if (id === 'crews') { nav.children[1].classList.add('active'); loadCrews(); }
+  if (id === 'matches') { nav.children[2].classList.add('active'); loadMatches(); }
+  if (id === 'me') { nav.children[3].classList.add('active'); loadMe(); }
 }
 
 function startApp() {
@@ -611,6 +644,77 @@ async function loadMatches() {
     row.append(canvas, info);
     list.appendChild(row);
   });
+}
+
+// ── CREWS ──
+async function loadCrews() {
+  const container = document.getElementById('crews-list');
+  container.innerHTML = '<div class="loading">loading crews...</div>';
+
+  try {
+    if (!allProfiles.length) {
+      const profiles = await api('/profiles');
+      allProfiles = profiles;
+      allProfiles.forEach(p => { if (typeof p.foods === 'string') p.foods = JSON.parse(p.foods); });
+    }
+
+    // Group profiles by food
+    const crewMap = {};
+    FOODS.forEach(f => { crewMap[f.id] = []; });
+    allProfiles.forEach(p => {
+      p.foods.forEach(fid => {
+        if (crewMap[fid]) crewMap[fid].push(p);
+      });
+    });
+
+    container.innerHTML = '';
+
+    // Sort crews by member count (biggest first), skip empty
+    const sortedFoods = FOODS.filter(f => crewMap[f.id].length > 0)
+      .sort((a, b) => crewMap[b.id].length - crewMap[a.id].length);
+
+    if (sortedFoods.length === 0) {
+      container.innerHTML = '<div class="crew-empty">no one has joined yet!<br>be the first 🐟</div>';
+      return;
+    }
+
+    sortedFoods.forEach(food => {
+      const members = crewMap[food.id];
+      const section = document.createElement('div');
+      section.className = 'crew-section';
+
+      const header = document.createElement('div');
+      header.className = 'crew-header';
+      header.innerHTML = `<span class="crew-emoji">${food.emoji}</span><span class="crew-label">${food.label} crew</span><span class="crew-count">${members.length}</span>`;
+
+      const membersEl = document.createElement('div');
+      membersEl.className = 'crew-members';
+
+      members.forEach(m => {
+        const member = document.createElement('div');
+        member.className = 'crew-member';
+        if (m.id === myProfileId) member.classList.add('is-me');
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 40; canvas.height = 40;
+        canvas.style.width = '40px'; canvas.style.height = '40px';
+        drawAvatar(canvas, m.animal_idx, m.palette_idx, 40);
+
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = m.id === myProfileId ? `${m.name} (you)` : m.name;
+
+        member.append(canvas, name);
+        membersEl.appendChild(member);
+      });
+
+      section.append(header, membersEl);
+      container.appendChild(section);
+    });
+  } catch (e) {
+    console.error('crews load failed', e);
+    container.innerHTML = '<div class="crew-empty">failed to load crews</div>';
+  }
 }
 
 // ── ME SCREEN ──
