@@ -4,13 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Fish Market Buddy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-@font-face {
-  font-family: 'Pixel';
-  src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-}
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -33,10 +29,8 @@ html, body {
   background: var(--bg);
   color: var(--text);
   overflow: hidden;
-  touch-action: pan-y;
 }
 
-/* SCREENS */
 .screen {
   display: none;
   flex-direction: column;
@@ -48,21 +42,13 @@ html, body {
   gap: 16px;
 }
 .screen.active { display: flex; }
+.screen.scrollable { overflow-y: auto; justify-content: flex-start; padding-top: 40px; padding-bottom: 80px; }
 
-/* SPLASH */
-#splash h1 {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--navy);
-}
-#splash .fish-icon {
-  font-size: 48px;
-  animation: bob 2s ease-in-out infinite;
-}
-@keyframes bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
+h1 { font-size: 14px; line-height: 1.8; }
+h2 { font-size: 11px; margin-bottom: 8px; }
+
+.fish-icon { font-size: 48px; animation: bob 2s ease-in-out infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 /* BUTTONS */
 .btn {
@@ -77,27 +63,13 @@ html, body {
   text-transform: uppercase;
   box-shadow: 4px 4px 0 var(--navy);
 }
-.btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--navy);
-}
-.btn.secondary {
-  background: var(--blue);
-}
-.btn.small {
-  font-size: 8px;
-  padding: 10px 16px;
-}
+.btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--navy); }
+.btn:disabled { opacity: 0.4; pointer-events: none; }
+.btn.secondary { background: var(--blue); }
+.btn.small { font-size: 8px; padding: 10px 16px; }
 
-/* PROFILE SCREEN */
-#profile { justify-content: flex-start; padding-top: 40px; overflow-y: auto; }
-#profile h2 { font-size: 11px; margin-bottom: 8px; }
-
-.input-wrap {
-  width: 100%;
-  max-width: 320px;
-}
-.input-wrap input {
+.input-wrap { width: 100%; max-width: 320px; }
+.input-wrap input, .input-wrap textarea {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
   width: 100%;
@@ -106,19 +78,11 @@ html, body {
   background: var(--card);
   color: var(--navy);
   outline: none;
+  resize: none;
 }
 
-.avatar-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.avatar-area canvas {
-  border: var(--border);
-  image-rendering: pixelated;
-  background: var(--card);
-}
+.avatar-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.avatar-area canvas { border: var(--border); image-rendering: pixelated; background: var(--card); }
 
 .food-grid {
   display: grid;
@@ -138,193 +102,92 @@ html, body {
   text-align: center;
   line-height: 1.4;
 }
-.food-chip.selected {
-  background: var(--blue);
-  box-shadow: inset 0 0 0 2px var(--navy);
-}
+.food-chip.selected { background: var(--blue); box-shadow: inset 0 0 0 2px var(--navy); }
 .food-chip .emoji { font-size: 18px; display: block; margin-bottom: 4px; font-family: system-ui; }
 
-/* BROWSE SCREEN */
-#browse { justify-content: flex-start; padding-top: 30px; }
-#browse h2 { font-size: 10px; }
-
-.card-stack {
-  position: relative;
-  width: 280px;
-  height: 360px;
-}
+/* CARD STACK */
+.card-stack { position: relative; width: 280px; height: 360px; }
 .buddy-card {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: var(--card);
-  border: var(--border);
+  position: absolute; width: 100%; height: 100%;
+  background: var(--card); border: var(--border);
   box-shadow: 6px 6px 0 var(--navy);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 20px;
   transition: transform 0.4s ease, opacity 0.4s ease;
   user-select: none;
 }
-.buddy-card canvas {
-  image-rendering: pixelated;
-  border: var(--border);
-}
-.buddy-card .name {
-  font-size: 11px;
-}
-.buddy-card .foods {
-  font-size: 16px;
-  font-family: system-ui;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.buddy-card .tagline {
-  font-size: 7px;
-  color: var(--muted);
-  line-height: 1.6;
-}
+.buddy-card canvas { image-rendering: pixelated; border: var(--border); }
+.buddy-card .name { font-size: 11px; }
+.buddy-card .foods { font-size: 16px; font-family: system-ui; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.buddy-card .tagline { font-size: 7px; color: var(--muted); line-height: 1.6; }
 
-.swipe-buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-}
+.swipe-buttons { display: flex; gap: 16px; margin-top: 12px; }
 .swipe-btn {
-  width: 60px;
-  height: 60px;
-  border: var(--border);
-  border-radius: 50%;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 3px 3px 0 var(--navy);
-  transition: transform 0.1s;
-  font-family: system-ui;
+  width: 60px; height: 60px;
+  border: var(--border); border-radius: 50%;
+  font-size: 24px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 3px 3px 0 var(--navy);
+  transition: transform 0.1s; font-family: system-ui;
 }
 .swipe-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--navy); }
 .swipe-btn.nope { background: var(--orange); }
 .swipe-btn.yep { background: var(--green); }
 
 .swipe-hint {
-  font-size: 7px;
-  color: var(--muted);
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  font-weight: bold;
-  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--muted);
+  position: absolute; top: 50%; transform: translateY(-50%);
+  pointer-events: none; opacity: 0; transition: opacity 0.2s;
+  font-weight: bold; font-family: 'Press Start 2P', monospace;
 }
 .swipe-hint.left { left: -60px; color: var(--pink); }
 .swipe-hint.right { right: -60px; color: var(--green); }
 
-/* MATCH SCREEN */
-#match-screen {
-  background: var(--navy);
-  color: var(--card);
-}
-#match-screen h2 {
-  font-size: 14px;
-  color: var(--pink);
-  animation: pulse 0.6s ease-in-out infinite alternate;
-}
-@keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
-}
-.match-avatars {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-.match-avatars canvas {
-  image-rendering: pixelated;
-  border: 3px solid var(--pink);
-}
-.match-heart {
-  font-size: 32px;
-  font-family: system-ui;
-  animation: bob 1s ease-in-out infinite;
-}
-.match-foods {
-  font-size: 8px;
-  color: var(--blue);
-  line-height: 1.8;
-}
+/* MATCH CELEBRATION */
+#match-screen { background: var(--navy); color: var(--card); }
+#match-screen h2 { font-size: 14px; color: var(--pink); animation: pulse 0.6s ease-in-out infinite alternate; }
+@keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+.match-avatars { display: flex; gap: 20px; align-items: center; }
+.match-avatars canvas { image-rendering: pixelated; border: 3px solid var(--pink); }
+.match-heart { font-size: 32px; font-family: system-ui; animation: bob 1s ease-in-out infinite; }
+.match-foods { font-size: 8px; color: var(--blue); line-height: 1.8; }
 
 /* MATCHES LIST */
-#matches { justify-content: flex-start; padding-top: 30px; overflow-y: auto; }
-#matches h2 { font-size: 11px; }
-.matches-list {
-  width: 100%;
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.match-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border: var(--border);
-  background: var(--card);
-}
+.matches-list { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.match-row { display: flex; align-items: center; gap: 12px; padding: 12px; border: var(--border); background: var(--card); }
 .match-row canvas { image-rendering: pixelated; }
 .match-row .info { text-align: left; }
 .match-row .info .name { font-size: 9px; }
 .match-row .info .foods { font-size: 14px; font-family: system-ui; margin-top: 4px; }
-
-.no-matches {
-  font-size: 8px;
-  color: var(--muted);
-  line-height: 1.8;
-}
+.no-matches { font-size: 8px; color: var(--muted); line-height: 1.8; }
 
 /* NAV */
 .nav-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: none;
-  justify-content: center;
-  gap: 20px;
-  padding: 12px;
-  background: var(--card);
-  border-top: var(--border);
-  z-index: 100;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: none; justify-content: center; gap: 20px;
+  padding: 12px; background: var(--card); border-top: var(--border); z-index: 100;
 }
 .nav-bar.visible { display: flex; }
 .nav-btn {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  padding: 8px 14px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--muted);
+  font-family: 'Press Start 2P', monospace; font-size: 8px;
+  padding: 8px 14px; border: none; background: none; cursor: pointer; color: var(--muted);
 }
 .nav-btn.active { color: var(--pink); }
 
+/* SETUP SCREEN */
+#setup .step { font-size: 7px; color: var(--muted); line-height: 1.8; max-width: 300px; text-align: left; }
+#setup .step b { color: var(--navy); }
+.status-msg { font-size: 8px; color: var(--green); min-height: 20px; }
+.error-msg { font-size: 8px; color: var(--pink); min-height: 20px; }
+
+/* LOADING */
+.loading { font-size: 8px; color: var(--muted); animation: blink 1s infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
 /* CONFETTI */
-.confetti-piece {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  pointer-events: none;
-  z-index: 200;
-}
+.confetti-piece { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 200; }
+
+/* PEOPLE COUNT */
+.people-count { font-size: 7px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -334,30 +197,81 @@ html, body {
   <div class="fish-icon">🐟</div>
   <h1>find your<br>fish market<br>buddy</h1>
   <p style="font-size:8px;color:var(--muted);line-height:1.6">make a profile.<br>swipe for your crew.</p>
-  <button class="btn" onclick="showScreen('profile')">let's go</button>
+  <button class="btn" onclick="startApp()">let's go</button>
+</div>
+
+<!-- SETUP (only shown to whoever sets up Supabase) -->
+<div id="setup" class="screen scrollable">
+  <h2>quick setup</h2>
+  <p style="font-size:7px;color:var(--muted);line-height:1.8;max-width:300px">
+    one-time setup so your team's profiles are saved. takes 2 min.
+  </p>
+  <div class="step">
+    <b>1.</b> go to supabase.com → sign up free<br>
+    <b>2.</b> create a new project (any name/password)<br>
+    <b>3.</b> wait for it to spin up (~30s)<br>
+    <b>4.</b> go to SQL Editor → paste this and hit Run:
+  </div>
+  <div class="input-wrap">
+    <textarea id="sql-snippet" rows="6" readonly style="font-size:7px;line-height:1.4;font-family:monospace;cursor:pointer" onclick="this.select();document.execCommand('copy')">create table profiles (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  foods text[] not null,
+  animal_idx int not null,
+  palette_idx int not null,
+  tagline text,
+  created_at timestamptz default now()
+);
+create table likes (
+  id uuid default gen_random_uuid() primary key,
+  from_id uuid references profiles(id),
+  to_id uuid references profiles(id),
+  created_at timestamptz default now(),
+  unique(from_id, to_id)
+);
+alter table profiles enable row level security;
+alter table likes enable row level security;
+create policy "anyone can read profiles" on profiles for select using (true);
+create policy "anyone can insert profiles" on profiles for insert with check (true);
+create policy "anyone can read likes" on likes for select using (true);
+create policy "anyone can insert likes" on likes for insert with check (true);</textarea>
+  </div>
+  <div class="step">
+    <b>5.</b> go to Settings → API → copy your <b>Project URL</b> and <b>anon public</b> key below:
+  </div>
+  <div class="input-wrap">
+    <input id="setup-url" type="text" placeholder="project url" autocomplete="off">
+  </div>
+  <div class="input-wrap">
+    <input id="setup-key" type="text" placeholder="anon public key" autocomplete="off">
+  </div>
+  <div class="status-msg" id="setup-status"></div>
+  <button class="btn" onclick="saveConfig()">connect</button>
 </div>
 
 <!-- PROFILE -->
-<div id="profile" class="screen">
+<div id="profile" class="screen scrollable">
   <h2>who are you?</h2>
   <div class="input-wrap">
     <input id="name-input" type="text" placeholder="your name" maxlength="12" autocomplete="off">
   </div>
-
   <div class="avatar-area">
     <canvas id="avatar-canvas" width="128" height="128"></canvas>
     <button class="btn small secondary" onclick="regenAvatar()">↻ new buddy</button>
   </div>
-
   <h2>what do you crave?</h2>
   <div class="food-grid" id="food-grid"></div>
-
-  <button class="btn" onclick="saveProfile()" style="margin-top:8px;margin-bottom:60px">find my crew</button>
+  <h2>your vibe?</h2>
+  <div class="input-wrap">
+    <input id="tagline-input" type="text" placeholder="e.g. here for the oysters" maxlength="40" autocomplete="off">
+  </div>
+  <button class="btn" onclick="saveProfile()" style="margin-top:8px">find my crew</button>
 </div>
 
 <!-- BROWSE -->
 <div id="browse" class="screen">
   <h2>swipe your crew</h2>
+  <div class="people-count" id="people-count"></div>
   <div class="card-stack" id="card-stack">
     <span class="swipe-hint left" id="hint-nope">nah</span>
     <span class="swipe-hint right" id="hint-yep">yep!</span>
@@ -379,10 +293,10 @@ html, body {
 </div>
 
 <!-- MATCHES LIST -->
-<div id="matches" class="screen">
+<div id="matches" class="screen scrollable">
   <h2>your buddies</h2>
   <div class="matches-list" id="matches-list"></div>
-  <button class="btn small" onclick="showScreen('browse')" style="margin-top:12px;margin-bottom:60px">back to swiping</button>
+  <button class="btn small" onclick="showScreen('browse')" style="margin-top:12px">back to swiping</button>
 </div>
 
 <!-- NAV -->
@@ -392,6 +306,69 @@ html, body {
 </div>
 
 <script>
+// ── CONFIG ──
+let SUPABASE_URL = '';
+let SUPABASE_KEY = '';
+let myProfileId = null;
+let allProfiles = [];
+let browsableProfiles = [];
+let currentBrowseIdx = 0;
+let myLikes = new Set();
+let likesToMe = new Set();
+let matchedProfiles = [];
+
+// Check URL hash for config (shared link)
+function loadConfigFromHash() {
+  try {
+    const hash = location.hash.slice(1);
+    if (!hash) return false;
+    const decoded = JSON.parse(atob(hash));
+    if (decoded.u && decoded.k) {
+      SUPABASE_URL = decoded.u;
+      SUPABASE_KEY = decoded.k;
+      localStorage.setItem('fm_sb_url', SUPABASE_URL);
+      localStorage.setItem('fm_sb_key', SUPABASE_KEY);
+      return true;
+    }
+  } catch {}
+  return false;
+}
+
+function loadConfigFromStorage() {
+  SUPABASE_URL = localStorage.getItem('fm_sb_url') || '';
+  SUPABASE_KEY = localStorage.getItem('fm_sb_key') || '';
+  return !!(SUPABASE_URL && SUPABASE_KEY);
+}
+
+function hasConfig() {
+  return loadConfigFromHash() || loadConfigFromStorage();
+}
+
+// ── SUPABASE REST HELPERS ──
+function sbFetch(path, options = {}) {
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': options.prefer || 'return=representation',
+    ...options.headers,
+  };
+  return fetch(url, { ...options, headers });
+}
+
+async function sbSelect(table, query = '') {
+  const res = await sbFetch(`${table}?${query}`);
+  if (!res.ok) throw new Error(`select failed: ${res.status}`);
+  return res.json();
+}
+
+async function sbInsert(table, data) {
+  const res = await sbFetch(table, { method: 'POST', body: JSON.stringify(data) });
+  if (!res.ok) throw new Error(`insert failed: ${res.status}`);
+  return res.json();
+}
+
 // ── FOOD OPTIONS ──
 const FOODS = [
   { id: 'sashimi', emoji: '🍣', label: 'sashimi' },
@@ -408,116 +385,44 @@ const FOODS = [
 // ── PIXEL AVATAR SYSTEM ──
 const ANIMALS = [
   { name: 'cat', pixels: [
-    '....1111....',
-    '...111111...',
-    '..11....11..',
-    '.11.1..1.11.',
-    '.11......11.',
-    '..11....11..',
-    '...111111...',
-    '....1111....',
-    '...111111...',
-    '..11111111..',
-    '..11111111..',
-    '...111111...',
+    '....1111....','...111111...','..11....11..','.11.1..1.11.',
+    '.11......11.','..11....11..','...111111...','....1111....',
+    '...111111...','..11111111..','..11111111..','...111111...',
   ]},
   { name: 'fish', pixels: [
-    '............',
-    '....1111....',
-    '...111111...',
-    '..1111.1111.',
-    '.11111111111',
-    '.11111111111',
-    '..1111.1111.',
-    '...111111...',
-    '....1111....',
-    '............',
-    '............',
-    '............',
+    '............','....1111....','...111111...','..1111.1111.',
+    '.11111111111','.11111111111','..1111.1111.','...111111...',
+    '....1111....','............','............','............',
   ]},
   { name: 'octopus', pixels: [
-    '....1111....',
-    '...111111...',
-    '..11.11.11..',
-    '..11111111..',
-    '..11111111..',
-    '...111111...',
-    '..11.11.11..',
-    '.11..11..11.',
-    '.1...11...1.',
-    '1....11....1',
-    '............',
-    '............',
+    '....1111....','...111111...','..11.11.11..','..11111111..',
+    '..11111111..','...111111...','..11.11.11..','.11..11..11.',
+    '.1...11...1.','1....11....1','............','............',
   ]},
   { name: 'crab', pixels: [
-    '1..........1',
-    '.1........1.',
-    '.1..1111..1.',
-    '..1.1..1.1..',
-    '..11111111..',
-    '..11.11.11..',
-    '..11111111..',
-    '...111111...',
-    '..1..11..1..',
-    '.1...11...1.',
-    '............',
-    '............',
+    '1..........1','.1........1.','.1..1111..1.','..1.1..1.1..',
+    '..11111111..','..11.11.11..','..11111111..','...111111...',
+    '..1..11..1..','.1...11...1.','............','............',
   ]},
   { name: 'penguin', pixels: [
-    '....1111....',
-    '...111111...',
-    '..11.11.11..',
-    '..11111111..',
-    '.1.222222.1.',
-    '.1.222222.1.',
-    '...222222...',
-    '...111111...',
-    '...111111...',
-    '..33....33..',
-    '..333..333..',
-    '............',
+    '....1111....','...111111...','..11.11.11..','..11111111..',
+    '.1.222222.1.','.1.222222.1.','...222222...','...111111...',
+    '...111111...','..33....33..','..333..333..','............',
   ]},
   { name: 'seal', pixels: [
-    '............',
-    '...111111...',
-    '..11111111..',
-    '.11.1..1.11.',
-    '.1111..1111.',
-    '.111.11.111.',
-    '..11111111..',
-    '...111111...',
-    '....111111..',
-    '.....11111..',
-    '......1111..',
-    '............',
+    '............','...111111...','..11111111..','.11.1..1.11.',
+    '.1111..1111.','.111.11.111.','..11111111..','...111111...',
+    '....111111..','.....11111..','......1111..','............',
   ]},
   { name: 'shrimp', pixels: [
-    '.....111....',
-    '....11.11...',
-    '...11...1...',
-    '...1....1...',
-    '..11...1....',
-    '..1...1.....',
-    '..1..1......',
-    '..1.1.......',
-    '...1........',
-    '..1.........',
-    '.1..........',
-    '............',
+    '.....111....','....11.11...','...11...1...','...1....1...',
+    '..11...1....','..1...1.....','..1..1......','..1.1.......',
+    '...1........','..1.........','............','............',
   ]},
   { name: 'puffer', pixels: [
-    '....1111....',
-    '..11111111..',
-    '.1111111111.',
-    '.11.1111.11.',
-    '111111111111',
-    '111111111111',
-    '.1111111111.',
-    '.1111111111.',
-    '..11111111..',
-    '....1111....',
-    '............',
-    '............',
+    '....1111....','..11111111..','.1111111111.','.11.1111.11.',
+    '111111111111','111111111111','.1111111111.','.1111111111.',
+    '..11111111..','....1111....','............','............',
   ]},
 ];
 
@@ -534,11 +439,7 @@ const PALETTES = [
   { body: '#e07a5f', accent: '#fef6e4', eye: '#232946', extra: '#3d405b' },
 ];
 
-let myProfile = null;
-let myAvatarData = null; // { animalIdx, paletteIdx }
-let buddies = [];
-let currentBuddyIdx = 0;
-let myMatches = [];
+let myAvatarData = null;
 
 // ── INIT FOOD GRID ──
 const foodGrid = document.getElementById('food-grid');
@@ -548,57 +449,32 @@ FOODS.forEach(f => {
   chip.className = 'food-chip';
   chip.innerHTML = `<span class="emoji">${f.emoji}</span>${f.label}`;
   chip.onclick = () => {
-    if (selectedFoods.has(f.id)) {
-      selectedFoods.delete(f.id);
-      chip.classList.remove('selected');
-    } else {
-      selectedFoods.add(f.id);
-      chip.classList.add('selected');
-    }
+    if (selectedFoods.has(f.id)) { selectedFoods.delete(f.id); chip.classList.remove('selected'); }
+    else { selectedFoods.add(f.id); chip.classList.add('selected'); }
   };
   foodGrid.appendChild(chip);
 });
 
-// ── AVATAR RENDERING ──
+// ── AVATAR ──
 function drawAvatar(canvas, animalIdx, paletteIdx, size) {
   const ctx = canvas.getContext('2d');
   const animal = ANIMALS[animalIdx];
   const palette = PALETTES[paletteIdx];
-  const grid = animal.pixels;
   const cellSize = size / 12;
-
   ctx.clearRect(0, 0, size, size);
   ctx.fillStyle = '#fef6e4';
   ctx.fillRect(0, 0, size, size);
-
-  const colorMap = { '1': palette.body, '2': palette.accent, '3': palette.extra, '.': null };
-
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[y].length; x++) {
-      const ch = grid[y][x];
-      const color = colorMap[ch];
-      if (color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-      }
+  const colorMap = { '1': palette.body, '2': palette.accent, '3': palette.extra };
+  for (let y = 0; y < animal.pixels.length; y++) {
+    for (let x = 0; x < animal.pixels[y].length; x++) {
+      const color = colorMap[animal.pixels[y][x]];
+      if (color) { ctx.fillStyle = color; ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize); }
     }
   }
-
-  // Draw eyes for animals that use '.' for eye position
-  if (animal.name === 'cat' || animal.name === 'fish' || animal.name === 'seal' || animal.name === 'puffer') {
+  const eyePositions = { cat: [[3,3],[8,3]], fish: [[4,3]], seal: [[3,3],[8,3]], puffer: [[3,3],[8,3]] };
+  if (eyePositions[animal.name]) {
     ctx.fillStyle = palette.eye;
-    if (animal.name === 'cat') {
-      ctx.fillRect(3 * cellSize, 3 * cellSize, cellSize, cellSize);
-      ctx.fillRect(8 * cellSize, 3 * cellSize, cellSize, cellSize);
-    } else if (animal.name === 'fish') {
-      ctx.fillRect(4 * cellSize, 3 * cellSize, cellSize, cellSize);
-    } else if (animal.name === 'seal') {
-      ctx.fillRect(3 * cellSize, 3 * cellSize, cellSize, cellSize);
-      ctx.fillRect(8 * cellSize, 3 * cellSize, cellSize, cellSize);
-    } else if (animal.name === 'puffer') {
-      ctx.fillRect(3 * cellSize, 3 * cellSize, cellSize, cellSize);
-      ctx.fillRect(8 * cellSize, 3 * cellSize, cellSize, cellSize);
-    }
+    eyePositions[animal.name].forEach(([ex, ey]) => ctx.fillRect(ex * cellSize, ey * cellSize, cellSize, cellSize));
   }
 }
 
@@ -611,94 +487,152 @@ function regenAvatar() {
 }
 regenAvatar();
 
-// ── FAKE BUDDIES GENERATOR ──
-const FAKE_NAMES = ['miso', 'coral', 'finn', 'pearl', 'nori', 'reef', 'shelly', 'kai', 'bubbles', 'marlin', 'luna', 'wave', 'sandy', 'otto', 'gill'];
-const TAGLINES = [
-  "here for the vibes and the brine",
-  "will fight you for the last oyster",
-  "sashimi is a personality trait",
-  "fish and chips is self care",
-  "i just really love the ocean",
-  "lobster bib enthusiast",
-  "prawn cocktail connoisseur",
-  "can we just get everything?",
-  "the crunchier the better",
-  "will trade my chips for your sashimi",
-  "here for the crab, staying for the company",
-  "poke bowl is a love language",
-];
-
-function generateBuddies() {
-  buddies = [];
-  const shuffledNames = [...FAKE_NAMES].sort(() => Math.random() - 0.5);
-  for (let i = 0; i < 12; i++) {
-    const numFoods = 2 + Math.floor(Math.random() * 3);
-    const shuffledFoods = [...FOODS].sort(() => Math.random() - 0.5);
-    const foods = shuffledFoods.slice(0, numFoods);
-    buddies.push({
-      name: shuffledNames[i],
-      foods,
-      animalIdx: Math.floor(Math.random() * ANIMALS.length),
-      paletteIdx: Math.floor(Math.random() * PALETTES.length),
-      tagline: TAGLINES[Math.floor(Math.random() * TAGLINES.length)],
-      likesYou: Math.random() > 0.4, // 60% chance they like you back
-    });
-  }
-}
-
 // ── SCREEN MANAGEMENT ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-
   const nav = document.getElementById('nav-bar');
   const showNav = ['browse', 'matches'].includes(id);
   nav.classList.toggle('visible', showNav);
-
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (id === 'browse') nav.children[0].classList.add('active');
-  if (id === 'matches') nav.children[1].classList.add('active');
+  if (id === 'browse') { nav.children[0].classList.add('active'); loadBrowse(); }
+  if (id === 'matches') { nav.children[1].classList.add('active'); loadMatches(); }
+}
 
-  if (id === 'browse') renderCurrentCard();
-  if (id === 'matches') renderMatchesList();
+// ── APP START ──
+function startApp() {
+  // Check for existing profile in localStorage
+  myProfileId = localStorage.getItem('fm_profile_id');
+
+  if (hasConfig()) {
+    if (myProfileId) {
+      // Already set up + has profile → go straight to browse
+      showScreen('browse');
+    } else {
+      showScreen('profile');
+    }
+  } else {
+    showScreen('setup');
+  }
+}
+
+// ── SETUP ──
+async function saveConfig() {
+  const url = document.getElementById('setup-url').value.trim().replace(/\/$/, '');
+  const key = document.getElementById('setup-key').value.trim();
+  const status = document.getElementById('setup-status');
+
+  if (!url || !key) { status.textContent = 'need both url and key'; status.className = 'error-msg'; return; }
+
+  SUPABASE_URL = url;
+  SUPABASE_KEY = key;
+
+  status.textContent = 'testing connection...';
+  status.className = 'status-msg';
+
+  try {
+    await sbSelect('profiles', 'limit=1');
+    localStorage.setItem('fm_sb_url', url);
+    localStorage.setItem('fm_sb_key', key);
+
+    // Set the hash so the share link works
+    const config = btoa(JSON.stringify({ u: url, k: key }));
+    history.replaceState(null, '', '#' + config);
+
+    status.textContent = 'connected! share this url with your team ✓';
+    setTimeout(() => showScreen('profile'), 1000);
+  } catch (e) {
+    status.textContent = 'connection failed — check url and key';
+    status.className = 'error-msg';
+  }
 }
 
 // ── PROFILE ──
-function saveProfile() {
+async function saveProfile() {
   const name = document.getElementById('name-input').value.trim();
   if (!name) { document.getElementById('name-input').style.borderColor = '#f582ae'; return; }
   if (selectedFoods.size === 0) return;
 
-  myProfile = { name, foods: [...selectedFoods], avatar: myAvatarData };
-  generateBuddies();
-  currentBuddyIdx = 0;
-  showScreen('browse');
+  const tagline = document.getElementById('tagline-input').value.trim() || null;
+
+  try {
+    const [profile] = await sbInsert('profiles', {
+      name,
+      foods: [...selectedFoods],
+      animal_idx: myAvatarData.animalIdx,
+      palette_idx: myAvatarData.paletteIdx,
+      tagline,
+    });
+
+    myProfileId = profile.id;
+    localStorage.setItem('fm_profile_id', profile.id);
+    showScreen('browse');
+  } catch (e) {
+    console.error('save failed', e);
+  }
 }
 
-// ── BROWSE/SWIPE ──
-function renderCurrentCard() {
+// ── BROWSE ──
+async function loadBrowse() {
   const stack = document.getElementById('card-stack');
-  // Remove old cards
   stack.querySelectorAll('.buddy-card').forEach(c => c.remove());
 
-  if (currentBuddyIdx >= buddies.length) {
+  // Show loading
+  const loadingCard = document.createElement('div');
+  loadingCard.className = 'buddy-card';
+  loadingCard.innerHTML = '<div class="loading">loading crew...</div>';
+  stack.appendChild(loadingCard);
+
+  try {
+    // Fetch all profiles, my likes, and likes to me
+    const [profiles, myLikesData, likesToMeData] = await Promise.all([
+      sbSelect('profiles', 'order=created_at.asc'),
+      sbSelect('likes', `from_id=eq.${myProfileId}&select=to_id`),
+      sbSelect('likes', `to_id=eq.${myProfileId}&select=from_id`),
+    ]);
+
+    allProfiles = profiles;
+    myLikes = new Set(myLikesData.map(l => l.to_id));
+    likesToMe = new Set(likesToMeData.map(l => l.from_id));
+
+    // Browsable = not me, not already liked
+    browsableProfiles = allProfiles.filter(p => p.id !== myProfileId && !myLikes.has(p.id));
+    currentBrowseIdx = 0;
+
+    // Update people count
+    const count = allProfiles.length;
+    document.getElementById('people-count').textContent = `${count} ${count === 1 ? 'person' : 'people'} joined`;
+
+    // Find matches (mutual likes)
+    matchedProfiles = allProfiles.filter(p => myLikes.has(p.id) && likesToMe.has(p.id));
+
+    renderCurrentCard();
+  } catch (e) {
+    console.error('load failed', e);
+    loadingCard.innerHTML = '<div style="font-size:8px;color:var(--pink)">failed to load — try again</div>';
+  }
+}
+
+function renderCurrentCard() {
+  const stack = document.getElementById('card-stack');
+  stack.querySelectorAll('.buddy-card').forEach(c => c.remove());
+
+  if (currentBrowseIdx >= browsableProfiles.length) {
     const empty = document.createElement('div');
     empty.className = 'buddy-card';
-    empty.innerHTML = '<div style="font-size:32px;font-family:system-ui">🐡</div><div style="font-size:9px;line-height:1.6">no more buddies!<br>check your matches</div>';
+    empty.innerHTML = '<div style="font-size:32px;font-family:system-ui">🐡</div><div style="font-size:8px;line-height:1.8">no more people!<br>waiting for more to join...<br><br>check your matches</div>';
     stack.appendChild(empty);
     return;
   }
 
-  const buddy = buddies[currentBuddyIdx];
+  const buddy = browsableProfiles[currentBrowseIdx];
   const card = document.createElement('div');
   card.className = 'buddy-card';
 
   const canvas = document.createElement('canvas');
-  canvas.width = 96;
-  canvas.height = 96;
-  canvas.style.width = '96px';
-  canvas.style.height = '96px';
-  drawAvatar(canvas, buddy.animalIdx, buddy.paletteIdx, 96);
+  canvas.width = 96; canvas.height = 96;
+  canvas.style.width = '96px'; canvas.style.height = '96px';
+  drawAvatar(canvas, buddy.animal_idx, buddy.palette_idx, 96);
 
   const nameEl = document.createElement('div');
   nameEl.className = 'name';
@@ -706,16 +640,17 @@ function renderCurrentCard() {
 
   const foodsEl = document.createElement('div');
   foodsEl.className = 'foods';
-  foodsEl.textContent = buddy.foods.map(f => f.emoji).join(' ');
+  const buddyFoodEmojis = buddy.foods.map(fid => { const f = FOODS.find(x => x.id === fid); return f ? f.emoji : ''; }).join(' ');
+  foodsEl.textContent = buddyFoodEmojis;
 
   const tagEl = document.createElement('div');
   tagEl.className = 'tagline';
-  tagEl.textContent = `"${buddy.tagline}"`;
+  tagEl.textContent = buddy.tagline ? `"${buddy.tagline}"` : '';
 
   card.append(canvas, nameEl, foodsEl, tagEl);
   stack.appendChild(card);
 
-  // Touch/drag swiping
+  // Touch swiping
   let startX = 0, currentX = 0, dragging = false;
   card.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; });
   card.addEventListener('touchmove', e => {
@@ -729,9 +664,9 @@ function renderCurrentCard() {
     dragging = false;
     document.getElementById('hint-nope').style.opacity = 0;
     document.getElementById('hint-yep').style.opacity = 0;
-    if (currentX > 80) { swipeYes(); }
-    else if (currentX < -80) { swipeNo(); }
-    else { card.style.transform = ''; }
+    if (currentX > 80) swipeYes();
+    else if (currentX < -80) swipeNo();
+    else card.style.transform = '';
     currentX = 0;
   });
 }
@@ -747,31 +682,38 @@ function animateSwipe(direction, callback) {
 }
 
 function swipeNo() {
-  animateSwipe('left', () => {
-    currentBuddyIdx++;
-    renderCurrentCard();
-  });
+  animateSwipe('left', () => { currentBrowseIdx++; renderCurrentCard(); });
 }
 
-function swipeYes() {
-  const buddy = buddies[currentBuddyIdx];
+async function swipeYes() {
+  const buddy = browsableProfiles[currentBrowseIdx];
   if (!buddy) return;
 
-  animateSwipe('right', () => {
-    if (buddy.likesYou) {
-      // MATCH!
-      const sharedFoods = buddy.foods.filter(f => selectedFoods.has(f.id));
-      myMatches.push({ ...buddy, sharedFoods });
-      showMatch(buddy, sharedFoods);
-    } else {
-      currentBuddyIdx++;
+  animateSwipe('right', async () => {
+    try {
+      await sbInsert('likes', { from_id: myProfileId, to_id: buddy.id });
+      myLikes.add(buddy.id);
+
+      if (likesToMe.has(buddy.id)) {
+        // Mutual match!
+        matchedProfiles.push(buddy);
+        const myProfile = allProfiles.find(p => p.id === myProfileId);
+        const sharedFoods = buddy.foods.filter(fid => myProfile && myProfile.foods.includes(fid));
+        showMatchScreen(buddy, myProfile, sharedFoods);
+      } else {
+        currentBrowseIdx++;
+        renderCurrentCard();
+      }
+    } catch (e) {
+      console.error('like failed', e);
+      currentBrowseIdx++;
       renderCurrentCard();
     }
   });
 }
 
 // ── MATCH SCREEN ──
-function showMatch(buddy, sharedFoods) {
+function showMatchScreen(buddy, myProfile, sharedFoodIds) {
   showScreen('match-screen');
   spawnConfetti();
 
@@ -781,51 +723,61 @@ function showMatch(buddy, sharedFoods) {
   const myCanvas = document.createElement('canvas');
   myCanvas.width = 80; myCanvas.height = 80;
   myCanvas.style.width = '80px'; myCanvas.style.height = '80px';
-  drawAvatar(myCanvas, myProfile.avatar.animalIdx, myProfile.avatar.paletteIdx, 80);
+  drawAvatar(myCanvas, myProfile.animal_idx, myProfile.palette_idx, 80);
 
   const theirCanvas = document.createElement('canvas');
   theirCanvas.width = 80; theirCanvas.height = 80;
   theirCanvas.style.width = '80px'; theirCanvas.style.height = '80px';
-  drawAvatar(theirCanvas, buddy.animalIdx, buddy.paletteIdx, 80);
+  drawAvatar(theirCanvas, buddy.animal_idx, buddy.palette_idx, 80);
 
   avatarArea.append(myCanvas, theirCanvas);
 
   const foodsEl = document.getElementById('match-foods');
-  if (sharedFoods.length > 0) {
-    foodsEl.textContent = `you both love ${sharedFoods.map(f => f.emoji).join(' ')}`;
+  if (sharedFoodIds.length > 0) {
+    const emojis = sharedFoodIds.map(fid => { const f = FOODS.find(x => x.id === fid); return f ? f.emoji : ''; }).join(' ');
+    foodsEl.textContent = `you both love ${emojis}`;
   } else {
-    foodsEl.textContent = "different tastes, same vibes ✨";
+    foodsEl.textContent = "different tastes, same vibes";
   }
 }
 
 function continueAfterMatch() {
-  currentBuddyIdx++;
+  currentBrowseIdx++;
   showScreen('browse');
 }
 
 // ── MATCHES LIST ──
-function renderMatchesList() {
+async function loadMatches() {
   const list = document.getElementById('matches-list');
   list.innerHTML = '';
 
-  if (myMatches.length === 0) {
+  try {
+    // Refresh likes data
+    const [myLikesData, likesToMeData] = await Promise.all([
+      sbSelect('likes', `from_id=eq.${myProfileId}&select=to_id`),
+      sbSelect('likes', `to_id=eq.${myProfileId}&select=from_id`),
+    ]);
+    myLikes = new Set(myLikesData.map(l => l.to_id));
+    likesToMe = new Set(likesToMeData.map(l => l.from_id));
+    matchedProfiles = allProfiles.filter(p => myLikes.has(p.id) && likesToMe.has(p.id));
+  } catch {}
+
+  if (matchedProfiles.length === 0) {
     list.innerHTML = '<div class="no-matches">no matches yet!<br>keep swiping 🐟</div>';
     return;
   }
 
-  myMatches.forEach(m => {
+  matchedProfiles.forEach(m => {
     const row = document.createElement('div');
     row.className = 'match-row';
-
     const canvas = document.createElement('canvas');
     canvas.width = 48; canvas.height = 48;
     canvas.style.width = '48px'; canvas.style.height = '48px';
-    drawAvatar(canvas, m.animalIdx, m.paletteIdx, 48);
-
+    drawAvatar(canvas, m.animal_idx, m.palette_idx, 48);
     const info = document.createElement('div');
     info.className = 'info';
-    info.innerHTML = `<div class="name">${m.name}</div><div class="foods">${m.foods.map(f => f.emoji).join(' ')}</div>`;
-
+    const emojis = m.foods.map(fid => { const f = FOODS.find(x => x.id === fid); return f ? f.emoji : ''; }).join(' ');
+    info.innerHTML = `<div class="name">${m.name}</div><div class="foods">${emojis}</div>`;
     row.append(canvas, info);
     list.appendChild(row);
   });
@@ -841,16 +793,13 @@ function spawnConfetti() {
     piece.style.left = Math.random() * 100 + 'vw';
     piece.style.top = '-10px';
     document.body.appendChild(piece);
-
     const destX = (Math.random() - 0.5) * 200;
     const destY = window.innerHeight + 20;
     const dur = 800 + Math.random() * 1200;
-
     piece.animate([
       { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
       { transform: `translate(${destX}px, ${destY}px) rotate(${360 + Math.random() * 360}deg)`, opacity: 0 },
     ], { duration: dur, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
-
     setTimeout(() => piece.remove(), dur);
   }
 }
