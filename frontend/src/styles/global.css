@@ -1,0 +1,460 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #fef6e4;
+  --card: #fff;
+  --pink: #f582ae;
+  --blue: #8bd3dd;
+  --orange: #f3d2c1;
+  --green: #8ac926;
+  --purple: #b8c1ec;
+  --navy: #232946;
+  --text: #232946;
+  --muted: #656886;
+  --border: 3px solid var(--navy);
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Press Start 2P", monospace;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+/* ── Screens ── */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  padding: 20px;
+  text-align: center;
+  gap: 16px;
+}
+
+.screen.scrollable {
+  overflow-y: auto;
+  justify-content: flex-start;
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+h1 {
+  font-size: 14px;
+  line-height: 1.8;
+}
+h2 {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+/* ── Fish bob ── */
+
+.fish-icon {
+  font-size: 48px;
+  animation: bob 2s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ── Buttons ── */
+
+.btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  padding: 14px 24px;
+  border: var(--border);
+  background: var(--pink);
+  color: var(--navy);
+  cursor: pointer;
+  transition: transform 0.1s;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--navy);
+}
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--navy);
+}
+.btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.btn.secondary {
+  background: var(--blue);
+}
+.btn.small {
+  font-size: 8px;
+  padding: 10px 16px;
+}
+
+/* ── Inputs ── */
+
+.input-wrap {
+  width: 100%;
+  max-width: 320px;
+}
+.input-wrap input {
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  width: 100%;
+  padding: 12px;
+  border: var(--border);
+  background: var(--card);
+  color: var(--navy);
+  outline: none;
+}
+
+/* ── Avatar ── */
+
+.avatar-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.avatar-border {
+  border: var(--border);
+}
+
+/* ── Food Grid ── */
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+}
+.food-chip {
+  font-family: "Press Start 2P", monospace;
+  font-size: 7px;
+  padding: 10px 6px;
+  border: var(--border);
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  line-height: 1.4;
+}
+.food-chip.selected {
+  background: var(--blue);
+  box-shadow: inset 0 0 0 2px var(--navy);
+}
+.food-chip .emoji {
+  font-size: 18px;
+  display: block;
+  margin-bottom: 4px;
+  font-family: system-ui;
+}
+
+/* ── Card Stack / Swiping ── */
+
+.card-stack {
+  position: relative;
+  width: 280px;
+  height: 360px;
+}
+.buddy-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--card);
+  border: var(--border);
+  box-shadow: 6px 6px 0 var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  user-select: none;
+}
+.buddy-card canvas {
+  image-rendering: pixelated;
+  border: var(--border);
+}
+.buddy-card .name {
+  font-size: 11px;
+}
+.buddy-card .foods {
+  font-size: 16px;
+  font-family: system-ui;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.buddy-card .tagline {
+  font-size: 7px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.swipe-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+.swipe-btn {
+  width: 60px;
+  height: 60px;
+  border: var(--border);
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--navy);
+  transition: transform 0.1s;
+  font-family: system-ui;
+}
+.swipe-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--navy);
+}
+.swipe-btn.nope {
+  background: var(--orange);
+}
+.swipe-btn.yep {
+  background: var(--green);
+}
+
+.swipe-hint {
+  font-size: 7px;
+  color: var(--muted);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: opacity 0.2s;
+  font-weight: bold;
+  font-family: "Press Start 2P", monospace;
+}
+.swipe-hint.left {
+  left: -60px;
+  color: var(--pink);
+}
+.swipe-hint.right {
+  right: -60px;
+  color: var(--green);
+}
+
+/* ── Match Screen ── */
+
+#match-screen {
+  background: var(--navy);
+  color: var(--card);
+}
+#match-screen h2 {
+  font-size: 14px;
+  color: var(--pink);
+  animation: pulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+.match-avatars {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.match-avatars canvas {
+  image-rendering: pixelated;
+  border: 3px solid var(--pink);
+}
+.match-heart {
+  font-size: 32px;
+  font-family: system-ui;
+  animation: bob 1s ease-in-out infinite;
+}
+.match-foods {
+  font-size: 8px;
+  color: var(--blue);
+  line-height: 1.8;
+}
+
+/* ── Matches List ── */
+
+.matches-list {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.match-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: var(--border);
+  background: var(--card);
+}
+.match-row canvas {
+  image-rendering: pixelated;
+}
+.match-row .info {
+  text-align: left;
+}
+.match-row .info .name {
+  font-size: 9px;
+}
+.match-row .info .foods {
+  font-size: 14px;
+  font-family: system-ui;
+  margin-top: 4px;
+}
+.no-matches {
+  font-size: 8px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* ── Nav Bar ── */
+
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px;
+  background: var(--card);
+  border-top: var(--border);
+  z-index: 100;
+}
+.nav-bar.visible {
+  display: flex;
+}
+.nav-btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 8px;
+  padding: 8px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+}
+.nav-btn.active {
+  color: var(--pink);
+}
+
+/* ── Misc ── */
+
+.loading {
+  font-size: 8px;
+  color: var(--muted);
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.people-count {
+  font-size: 7px;
+  color: var(--muted);
+}
+.status-msg {
+  font-size: 8px;
+  color: var(--green);
+  min-height: 20px;
+}
+
+/* ── Crews ── */
+
+.crew-section {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 12px;
+}
+.crew-header {
+  font-size: 9px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: var(--border);
+  box-shadow: 4px 4px 0 var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.crew-header .crew-emoji {
+  font-size: 18px;
+  font-family: system-ui;
+}
+.crew-header .crew-label {
+  flex: 1;
+}
+.crew-header .crew-count {
+  font-size: 7px;
+  color: var(--muted);
+}
+.crew-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  margin-top: -3px;
+  background: var(--card);
+  border: var(--border);
+  border-top: none;
+}
+.crew-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 64px;
+}
+.crew-member canvas {
+  image-rendering: pixelated;
+  border: 2px solid var(--navy);
+}
+.crew-member .name {
+  font-size: 6px;
+  color: var(--navy);
+  text-align: center;
+  word-break: break-all;
+}
+.crew-member.is-me .name {
+  color: var(--pink);
+}
+.crew-empty {
+  font-size: 7px;
+  color: var(--muted);
+  line-height: 1.8;
+}
