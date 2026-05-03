@@ -8,6 +8,8 @@ export interface Profile {
   created_at: string;
 }
 
+export type ProfileInput = Omit<Profile, "id" | "created_at">;
+
 export interface LikeResult {
   matched: boolean;
 }
