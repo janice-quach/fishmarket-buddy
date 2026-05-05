@@ -178,9 +178,6 @@ const EYE_MAP: Record<string, [number, number][]> = {
   ],
 };
 
-export const ANIMAL_COUNT = ANIMALS.length;
-export const PALETTE_COUNT = PALETTES.length;
-
 export function drawAvatar(canvas: HTMLCanvasElement, animalIdx: number, paletteIdx: number, size: number): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
