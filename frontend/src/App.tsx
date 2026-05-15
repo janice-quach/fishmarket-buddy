@@ -7,7 +7,7 @@ import { MeScreen } from "./components/MeScreen";
 import { NavBar } from "./components/NavBar";
 import { ProfileScreen } from "./components/ProfileScreen";
 import { SplashScreen } from "./components/SplashScreen";
-import { getProfileId } from "./lib/storage";
+import { getProfileId, getWriteToken } from "./lib/storage";
 import type { Profile, ScreenId } from "./lib/types";
 
 interface MatchState {
@@ -18,6 +18,7 @@ interface MatchState {
 
 export function App() {
   const [profileId, setProfileId] = useState<string | null>(getProfileId);
+  const [writeToken, setWriteToken] = useState<string | null>(getWriteToken);
   const [screen, setScreen] = useState<ScreenId>("splash");
   const [matchState, setMatchState] = useState<MatchState | null>(null);
   const profilesRef = useRef<Profile[]>([]);
@@ -41,9 +42,23 @@ export function App() {
   return (
     <>
       {screen === "splash" && <SplashScreen onStart={onStart} />}
-      {screen === "profile" && <ProfileScreen onCreated={setProfileId} onNavigate={setScreen} />}
+      {screen === "profile" && (
+        <ProfileScreen
+          onCreated={(id, token) => {
+            setProfileId(id);
+            setWriteToken(token);
+          }}
+          onNavigate={setScreen}
+        />
+      )}
       {screen === "browse" && profileId && (
-        <BrowseScreen profileId={profileId} onMatch={onMatch} onNavigate={setScreen} profilesRef={profilesRef} />
+        <BrowseScreen
+          profileId={profileId}
+          writeToken={writeToken ?? ""}
+          onMatch={onMatch}
+          onNavigate={setScreen}
+          profilesRef={profilesRef}
+        />
       )}
       {screen === "match" && matchState && (
         <MatchScreen
@@ -54,9 +69,13 @@ export function App() {
           onNavigate={setScreen}
         />
       )}
-      {screen === "matches" && profileId && <MatchesScreen profileId={profileId} onNavigate={setScreen} />}
+      {screen === "matches" && profileId && (
+        <MatchesScreen profileId={profileId} writeToken={writeToken ?? ""} onNavigate={setScreen} />
+      )}
       {screen === "crews" && profileId && <CrewsScreen profileId={profileId} profilesRef={profilesRef} />}
-      {screen === "me" && profileId && <MeScreen profileId={profileId} profilesRef={profilesRef} />}
+      {screen === "me" && profileId && (
+        <MeScreen profileId={profileId} writeToken={writeToken ?? ""} profilesRef={profilesRef} />
+      )}
       {showNav && <NavBar active={screen} onNavigate={setScreen} />}
     </>
   );

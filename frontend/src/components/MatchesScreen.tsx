@@ -6,17 +6,18 @@ import { AvatarCanvas } from "./AvatarCanvas";
 
 interface Props {
   profileId: string;
+  writeToken: string;
   onNavigate: (screen: ScreenId) => void;
 }
 
-export function MatchesScreen({ profileId, onNavigate }: Props) {
+export function MatchesScreen({ profileId, writeToken, onNavigate }: Props) {
   const [matches, setMatches] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getMatches(profileId)
+    getMatches(profileId, writeToken)
       .then((m) => {
         if (!cancelled) setMatches(m);
       })

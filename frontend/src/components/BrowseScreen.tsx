@@ -6,12 +6,13 @@ import { AvatarCanvas } from "./AvatarCanvas";
 
 interface Props {
   profileId: string;
+  writeToken: string;
   onMatch: (buddy: Profile, myProfile: Profile, sharedFoods: string[]) => void;
   onNavigate: (screen: ScreenId) => void;
   profilesRef: React.MutableRefObject<Profile[]>;
 }
 
-export function BrowseScreen({ profileId, onMatch, onNavigate: _, profilesRef }: Props) {
+export function BrowseScreen({ profileId, writeToken, onMatch, onNavigate: _, profilesRef }: Props) {
   const [browsable, setBrowsable] = useState<Profile[]>([]);
   const [idx, setIdx] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export function BrowseScreen({ profileId, onMatch, onNavigate: _, profilesRef }:
     setLoading(true);
     setError(false);
 
-    Promise.all([getProfiles(), getMyLikes(profileId)])
+    Promise.all([getProfiles(), getMyLikes(profileId, writeToken)])
       .then(([profiles, likedIds]) => {
         if (cancelled) return;
         profilesRef.current = profiles;
@@ -62,7 +63,7 @@ export function BrowseScreen({ profileId, onMatch, onNavigate: _, profilesRef }:
 
     setTimeout(async () => {
       try {
-        const result = await likeProfile(profileId, buddy.id);
+        const result = await likeProfile(profileId, buddy.id, writeToken);
         likedRef.current.add(buddy.id);
 
         if (result.matched) {
