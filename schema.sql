@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   animal_idx INTEGER NOT NULL,
   palette_idx INTEGER NOT NULL,
   tagline TEXT,
+  write_token_hash TEXT,  -- SHA-256 hex of write token. NULL = legacy profile (no auth).
   created_at TEXT DEFAULT (datetime('now'))
 );
 

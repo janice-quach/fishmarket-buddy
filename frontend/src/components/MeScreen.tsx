@@ -7,10 +7,11 @@ import { FoodGrid } from "./FoodGrid";
 
 interface Props {
   profileId: string;
+  writeToken: string;
   profilesRef: React.MutableRefObject<Profile[]>;
 }
 
-export function MeScreen({ profileId, profilesRef }: Props) {
+export function MeScreen({ profileId, writeToken, profilesRef }: Props) {
   const myProfile = profilesRef.current.find((p) => p.id === profileId);
 
   const [name, setName] = useState(myProfile?.name ?? "");
@@ -51,7 +52,7 @@ export function MeScreen({ profileId, profilesRef }: Props) {
     }
 
     try {
-      const updated = await updateProfile(profileId, {
+      const updated = await updateProfile(profileId, writeToken, {
         name: trimmed,
         foods: [...selectedFoods],
         animal_idx: avatar.animalIdx,

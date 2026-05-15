@@ -8,6 +8,11 @@ export interface Profile {
   created_at: string;
 }
 
+// Returned once on profile creation — client must persist write_token.
+export interface ProfileCreated extends Profile {
+  write_token: string;
+}
+
 export interface LikeResult {
   matched: boolean;
 }

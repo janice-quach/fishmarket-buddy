@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 import { useAvatar } from "../hooks/useAvatar";
 import { createProfile } from "../lib/api";
-import { setProfileId } from "../lib/storage";
+import { setProfileId, setWriteToken } from "../lib/storage";
 import type { ScreenId } from "../lib/types";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { FoodGrid } from "./FoodGrid";
 
 interface Props {
-  onCreated: (id: string) => void;
+  onCreated: (id: string, token: string) => void;
   onNavigate: (screen: ScreenId) => void;
 }
 
@@ -48,7 +48,8 @@ export function ProfileScreen({ onCreated, onNavigate }: Props) {
       tagline: tagline.trim() || null,
     });
     setProfileId(profile.id);
-    onCreated(profile.id);
+    setWriteToken(profile.write_token);
+    onCreated(profile.id, profile.write_token);
     onNavigate("browse");
   };
 
