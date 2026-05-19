@@ -64,7 +64,15 @@ export default {
         await env.DB.prepare(
           "INSERT INTO profiles (id, name, foods, animal_idx, palette_idx, tagline, write_token_hash) VALUES (?, ?, ?, ?, ?, ?, ?)"
         )
-          .bind(id, name, JSON.stringify(foods), animal_idx, palette_idx, tagline || null, tokenHash)
+          .bind(
+            id,
+            name,
+            JSON.stringify(foods),
+            animal_idx,
+            palette_idx,
+            tagline || null,
+            tokenHash
+          )
           .run();
         // write_token returned once — client must store it.
         return json({ id, name, foods, animal_idx, palette_idx, tagline, write_token: writeToken });
